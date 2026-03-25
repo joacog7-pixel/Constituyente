@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Comité Constituyente Republicano</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="index.html" class="logo-wrap">
+      <div class="logo-mark">R</div>
+      <span class="logo-text">Comité Constituyente Republicano</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#noticias">Noticias</a>
+      <a href="blog.html">Blog</a>
+      <a href="comite.html">El comité</a>
+    </div>
+    <a href="index.html#adhiérete" class="nav-cta">Adhiérete</a>
+  </nav>
+
+  <header class="page-header">
+    <div class="hero-eyebrow">Comité Constituyente Republicano</div>
+    <h1>Blog del <strong>comité</strong></h1>
+  </header>
+
+  <div id="blog-grid" class="article-grid"></div>
+
+  <footer class="footer">
+    <span>constituyente.com.co</span>
+    <span class="footer-lema">El pueblo constituye, la república une</span>
+    <span>Comité Constituyente Republicano · 2026</span>
+  </footer>
+
+  <script>
+    function formatDate(str) {
+      if (!str) return '';
+      const d = new Date(str + 'T00:00:00');
+      return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+    fetch('content/blog/index.json')
+      .then(r => r.json())
+      .then(lista => {
+        const grid = document.getElementById('blog-grid');
+        lista.forEach(art => {
+          const a = document.createElement('a');
+          a.className = 'article-card';
+          a.href = 'blog/' + art.slug + '.html';
+          a.innerHTML = `
+            <div class="blog-cat">${art.categoria || 'Artículo'}</div>
+            <div class="blog-titulo">${art.titulo}</div>
+            <div class="blog-autor">${art.autor || 'El Comité'} · ${formatDate(art.fecha)}</div>
+          `;
+          grid.appendChild(a);
+        });
+      });
+  </script>
+</body>
+</html>
