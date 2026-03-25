@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comité Constituyente Republicano — El pueblo constituye, la república une</title>
+  <meta name="description" content="Seguimos el debate y las voces hacia una nueva Constitución que refunde el pacto común colombiano desde la soberanía popular." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="logo-wrap">
+      <div class="logo-mark">R</div>
+      <span class="logo-text">Comité Constituyente Republicano</span>
+    </div>
+    <div class="nav-links">
+      <a href="#noticias">Noticias</a>
+      <a href="blog.html">Blog</a>
+      <a href="comite.html">El comité</a>
+    </div>
+    <a href="#adhiérete" class="nav-cta">Adhiérete</a>
+  </nav>
+
+  <!-- TICKER -->
+  <div class="ticker" id="ticker">
+    <span class="ticker-label">Ahora</span>
+    <div class="ticker-pipe"></div>
+    <div class="ticker-track">
+      <span class="ticker-text" id="ticker-text">Cargando noticias recientes…</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-accent"></div>
+    <div class="hero-eyebrow">Colombia · Constituyente · 2026</div>
+    <h1>El pueblo<br><strong>constituye,</strong><br><em>la república une</em></h1>
+    <p class="hero-lema">Por una nueva Constitución que refunde el pacto común colombiano desde la soberanía popular.</p>
+    <div class="hero-btns">
+      <a href="#noticias" class="btn-p">Leer noticias</a>
+      <a href="comite.html" class="btn-s">Conocer el proyecto →</a>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- FEED DE NOTICIAS -->
+    <section class="feed" id="noticias">
+      <div class="sec-label"><span>Noticias recientes</span></div>
+      <div id="noticias-lista">
+        <p class="loading">Cargando noticias…</p>
+      </div>
+      <a href="noticias.html" class="ver-mas">Ver todas las noticias →</a>
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sec-label sec-label-dark"><span>Blog del comité</span></div>
+      <div id="blog-lista">
+        <p class="loading-dark">Cargando artículos…</p>
+      </div>
+      <a href="blog.html" class="ver-mas ver-mas-dark">Ver todos →</a>
+
+      <!-- FORMULARIO -->
+      <div class="adhiere" id="adhiérete">
+        <div class="adhiere-eyebrow">// únete</div>
+        <h3>Firma el manifiesto republicano</h3>
+        <p>Tu adhesión fortalece el proceso constituyente desde la ciudadanía.</p>
+        <form name="adhesion" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="adhesion" />
+          <p style="display:none"><input name="bot-field" /></p>
+          <input type="text" name="nombre" placeholder="Nombre completo" required />
+          <input type="email" name="email" placeholder="Correo electrónico" required />
+          <input type="text" name="ciudad" placeholder="Ciudad" />
+          <textarea name="mensaje" placeholder="Mensaje (opcional)"></textarea>
+          <button type="submit">Firmar el manifiesto</button>
+        </form>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span>constituyente.com.co</span>
+    <span class="footer-lema">El pueblo constituye, la república une</span>
+    <span>Comité Constituyente Republicano · 2026</span>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
