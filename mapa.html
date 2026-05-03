@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mapa de Propuestas — Comité Constituyente Republicano</title>
+  <meta name="description" content="Análisis y comparación de las propuestas constituyentes que circulan en el debate público colombiano." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ESTILOS ESPECÍFICOS DEL MAPA */
+    .mapa-intro {
+      max-width: 760px; margin: 0 auto; padding: 40px 32px 20px;
+    }
+    .mapa-intro h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 600;
+      color: var(--noche); margin-bottom: 14px;
+    }
+    .mapa-intro p {
+      font-size: 15px; font-weight: 300;
+      line-height: 1.75; color: rgba(13,27,42,0.7);
+      margin-bottom: 14px;
+    }
+
+    .filtros {
+      max-width: 1100px; margin: 20px auto 0;
+      padding: 0 32px;
+      display: flex; gap: 8px; flex-wrap: wrap;
+      align-items: center;
+    }
+    .filtros-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(13,27,42,0.5);
+      margin-right: 8px;
+    }
+    .filtro-btn {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      background: transparent;
+      border: 1px solid rgba(13,27,42,0.15);
+      padding: 6px 12px; border-radius: 2px;
+      cursor: pointer; color: rgba(13,27,42,0.6);
+    }
+    .filtro-btn:hover { border-color: var(--naranja); color: var(--naranja); }
+    .filtro-btn.activo {
+      background: var(--noche); color: #fff; border-color: var(--noche);
+    }
+
+    .tarjetas {
+      max-width: 1100px; margin: 0 auto;
+      padding: 30px 32px 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .tarjeta {
+      background: #fff;
+      border: 1px solid rgba(13,27,42,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .tarjeta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(13,27,42,0.08);
+    }
+
+    .tarjeta-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid rgba(13,27,42,0.06);
+    }
+    .tarjeta-postura {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 3px 8px; border-radius: 2px;
+      margin-bottom: 10px;
+    }
+    .postura-favor { background: rgba(3,173,67,0.1); color: #038c39; }
+    .postura-contra { background: rgba(248,40,12,0.08); color: #c0271a; }
+    .postura-critico { background: rgba(242,100,25,0.1); color: var(--naranja); }
+    .postura-alternativo { background: rgba(52,53,152,0.08); color: #343598; }
+
+    .tarjeta-actor {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 600;
+      color: var(--noche); line-height: 1.15; margin-bottom: 4px;
+    }
+    .tarjeta-rol {
+      font-size: 11px; color: rgba(13,27,42,0.5);
+      letter-spacing: 0.3px;
+    }
+
+    .tarjeta-body {
+      padding: 16px 20px 18px;
+      flex: 1;
+    }
+    .tarjeta-section {
+      margin-bottom: 14px;
+    }
+    .tarjeta-section:last-child { margin-bottom: 0; }
+    .tarjeta-section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--naranja);
+      margin-bottom: 6px;
+    }
+    .tarjeta-section-text {
+      font-size: 13px; font-weight: 300;
+      line-height: 1.6; color: rgba(13,27,42,0.75);
+    }
+
+    .tarjeta-cita {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-size: 14px;
+      color: rgba(13,27,42,0.65);
+      border-left: 2px solid var(--naranja);
+      padding-left: 12px;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .tarjeta-footer {
+      padding: 12px 20px;
+      background: rgba(13,27,42,0.02);
+      border-top: 1px solid rgba(13,27,42,0.06);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .tarjeta-fecha {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px; color: rgba(13,27,42,0.4);
+    }
+    .tarjeta-fuente {
+      font-size: 10px; color: var(--naranja);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .tarjeta-fuente:hover { text-decoration: underline; }
+
+    .leyenda {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 32px 30px;
+      display: flex; flex-wrap: wrap; gap: 14px;
+      font-size: 11px; color: rgba(13,27,42,0.55);
+    }
+    .leyenda-item { display: flex; align-items: center; gap: 6px; }
+    .leyenda-dot {
+      width: 10px; height: 10px; border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+      .tarjetas { grid-template-columns: 1fr; padding: 20px; }
+      .filtros { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="index.html" class="logo-wrap">
+      <div class="logo-mark">R</div>
+      <span class="logo-text">Comité Constituyente Republicano</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html#noticias">Noticias</a>
+      <a href="blog.html">Blog</a>
+      <a href="mapa.html">Mapa de propuestas</a>
+      <a href="comite.html">El comité</a>
+    </div>
+    <a href="index.html#adhiérete" class="nav-cta">Adhiérete</a>
+  </nav>
+
+  <header class="page-header">
+    <div class="hero-eyebrow">Análisis</div>
+    <h1>Mapa de <strong>propuestas</strong></h1>
+  </header>
+
+  <div class="mapa-intro">
+    <h2>Las visiones que circulan en el debate público</h2>
+    <p>El debate sobre una nueva constituyente para Colombia está cruzado por posturas distintas: desde quienes la impulsan como mecanismo para garantizar reformas sociales, hasta quienes proponen un referendo para impedirla. Aquí reunimos las posiciones más visibles que circulan en medios desde 2024.</p>
+    <p>El mapa se actualiza periódicamente con las nuevas voces que aparezcan en el debate.</p>
+  </div>
+
+  <div class="leyenda">
+    <span class="filtros-label">Posturas:</span>
+    <span class="leyenda-item"><span class="leyenda-dot" style="background:rgba(3,173,67,0.25)"></span>A favor</span>
+    <span class="leyenda-item"><span class="leyenda-dot" style="background:rgba(248,40,12,0.2)"></span>En contra</span>
+    <span class="leyenda-item"><span class="leyenda-dot" style="background:rgba(242,100,25,0.25)"></span>Crítico / matizado</span>
+    <span class="leyenda-item"><span class="leyenda-dot" style="background:rgba(52,53,152,0.2)"></span>Propuesta alternativa</span>
+  </div>
+
+  <div class="filtros">
+    <span class="filtros-label">Filtrar:</span>
+    <button class="filtro-btn activo" onclick="filtrar('todos', this)">Todos</button>
+    <button class="filtro-btn" onclick="filtrar('favor', this)">A favor</button>
+    <button class="filtro-btn" onclick="filtrar('contra', this)">En contra</button>
+    <button class="filtro-btn" onclick="filtrar('critico', this)">Críticos</button>
+    <button class="filtro-btn" onclick="filtrar('alternativo', this)">Alternativos</button>
+  </div>
+
+  <div class="tarjetas" id="tarjetas-container">
+
+    <!-- PETRO / GOBIERNO -->
+    <article class="tarjeta" data-postura="favor">
+      <div class="tarjeta-header">
+        <span class="tarjeta-postura postura-favor">A favor — Promotor</span>
+        <h3 class="tarjeta-actor">Gustavo Petro</h3>
+        <p class="tarjeta-rol">Presidente de la República · Gobierno Nacional</p>
+      </div>
+      <div class="tarjeta-body">
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Propuesta</div>
+          <div class="tarjeta-section-text">Convocar una Asamblea Nacional Constituyente para "agregar dos capítulos" a la Constitución de 1991: uno con reformas sociales (salud, pensional, laboral, agraria) y otro contra la corrupción. Anuncia recolección de firmas y radicación del proyecto el 20 de julio de 2026.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Ejes</div>
+          <div class="tarjeta-section-text">Reformas estructurales en salud, educación, trabajo y economía. Reforma del Banco de la República. Tribunal Constitucional Autónomo. Implementación inmediata de los acuerdos de paz.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Cita</div>
+          <div class="tarjeta-cita">"Solo hay una manera, se llama Asamblea Nacional Constituyente."</div>
+        </div>
+      </div>
+      <div class="tarjeta-footer">
+        <span class="tarjeta-fecha">May 2026</span>
+        <a href="https://www.elpais.com.co/colombia/presidente-petro-anuncia-que-convocara-una-constituyente-el-1-de-mayo-para-impulsar-reformas-sociales-y-anticorrupcion-3039.html" target="_blank" rel="noopener" class="tarjeta-fuente">El País →</a>
+      </div>
+    </article>
+
+    <!-- COMITÉ PROMOTOR OFICIAL -->
+    <article class="tarjeta" data-postura="favor">
+      <div class="tarjeta-header">
+        <span class="tarjeta-postura postura-favor">A favor — Promotor</span>
+        <h3 class="tarjeta-actor">Comité Promotor Oficial</h3>
+        <p class="tarjeta-rol">Inscrito ante la Registraduría · 9 integrantes</p>
+      </div>
+      <div class="tarjeta-body">
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Propuesta</div>
+          <div class="tarjeta-section-text">Recolectar firmas (la meta del gobierno son 10 millones, el mínimo legal son cerca de 3 millones) para radicar ante el nuevo Congreso un proyecto de ley que convoque la asamblea constituyente.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Fundamento</div>
+          <div class="tarjeta-section-text">Diagnóstico de "bloqueo institucional y omisiones legislativas" que han impedido garantizar derechos fundamentales. Reformas estructurales en salud, educación, trabajo y economía. Reconocimiento de derechos territoriales de pueblos campesinos, indígenas y afros.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Marco legal</div>
+          <div class="tarjeta-section-text">Artículos 374 y 376 de la Constitución y Leyes 134 de 1994 y 1757 de 2015.</div>
+        </div>
+      </div>
+      <div class="tarjeta-footer">
+        <span class="tarjeta-fecha">Dic 2025</span>
+        <a href="https://www.presidencia.gov.co/prensa/Paginas/Con-inscripcion-de-comite-promotor-se-activa-el-camino-hacia-una-Asamblea-Nacional-Constituyente-251226.aspx" target="_blank" rel="noopener" class="tarjeta-fuente">Presidencia →</a>
+      </div>
+    </article>
+
+    <!-- MARÍA FERNANDA CABAL / CENTRO DEMOCRÁTICO -->
+    <article class="tarjeta" data-postura="contra">
+      <div class="tarjeta-header">
+        <span class="tarjeta-postura postura-contra">En contra</span>
+        <h3 class="tarjeta-actor">María Fernanda Cabal</h3>
+        <p class="tarjeta-rol">Senadora · Centro Democrático · Precandidata presidencial</p>
+      </div>
+      <div class="tarjeta-body">
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Postura</div>
+          <div class="tarjeta-section-text">Rechazo frontal a la constituyente. La califica como "golpe de Estado disfrazado" y atribuye al presidente la intención de "perpetuarse" en el poder. Anuncia que la bancada usará todas las herramientas legislativas para impedirla.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Argumento</div>
+          <div class="tarjeta-section-text">"Colombia no necesita cambiar la Constitución, necesita cambiar a Petro". Considera que la Constitución de 1991 es un marco democrático adecuado y que la propuesta busca habilitar la reelección presidencial.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Cita</div>
+          <div class="tarjeta-cita">"Petro, acorralado por escándalos, quiere una constituyente para perpetuarse."</div>
+        </div>
+      </div>
+      <div class="tarjeta-footer">
+        <span class="tarjeta-fecha">Oct 2025</span>
+        <a href="https://www.elcolombiano.com/colombia/maria-fernanda-cabal-critico-gobierno-tras-intencion-constituyente-colombia-EI30290325" target="_blank" rel="noopener" class="tarjeta-fuente">El Colombiano →</a>
+      </div>
+    </article>
+
+    <!-- EDNA BONILLA / REFERENDO -->
+    <article class="tarjeta" data-postura="alternativo">
+      <div class="tarjeta-header">
+        <span class="tarjeta-postura postura-alternativo">Alternativo — Bloqueo</span>
+        <h3 class="tarjeta-actor">Edna Bonilla</h3>
+        <p class="tarjeta-rol">Promotora del Referendo de Blindaje Constitucional</p>
+      </div>
+      <div class="tarjeta-body">
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Propuesta</div>
+          <div class="tarjeta-section-text">Referendo para incorporar un artículo transitorio a la Constitución que prohíba convocar una Asamblea Constituyente hasta el año 2034. Recolección de cerca de 3 millones de firmas, aprobación del Congreso y revisión de la Corte Constitucional.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Argumento</div>
+          <div class="tarjeta-section-text">La Constitución de 1991 es un acuerdo histórico construido por consenso. Cualquier reforma de tal magnitud en un contexto de polarización pondría en riesgo logros democráticos consolidados. Defensa institucional y temporal.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Mecanismo</div>
+          <div class="tarjeta-section-text">Iniciativa popular usando los mismos mecanismos de la Constitución para defenderla.</div>
+        </div>
+      </div>
+      <div class="tarjeta-footer">
+        <span class="tarjeta-fecha">Abr 2026</span>
+        <a href="https://elvenezolanonewspaper.com/2026/04/referendo-impulsa-defensa-de-la-constitucion-frente-a-constituyente/" target="_blank" rel="noopener" class="tarjeta-fuente">Cobertura →</a>
+      </div>
+    </article>
+
+    <!-- RODRIGO UPRIMNY -->
+    <article class="tarjeta" data-postura="critico">
+      <div class="tarjeta-header">
+        <span class="tarjeta-postura postura-critico">Crítico — Reformista</span>
+        <h3 class="tarjeta-actor">Rodrigo Uprimny</h3>
+        <p class="tarjeta-rol">Investigador de Dejusticia · Profesor U. Nacional</p>
+      </div>
+      <div class="tarjeta-body">
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Postura</div>
+          <div class="tarjeta-section-text">Apoya las reformas que persigue el gobierno pero rechaza la convocatoria de una constituyente. La considera "innecesaria, improvisada, inoportuna, contradictoria, ambigua y riesgosa". El problema no está en la Constitución sino en la falta de mayorías políticas.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Propuesta alternativa</div>
+          <div class="tarjeta-section-text">Un gran acuerdo nacional al estilo de los Pactos de la Moncloa de 1977 en España, sin tocar la Constitución del 91, para reducir la polarización y avanzar reformas por vías legales y de política pública.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Cita</div>
+          <div class="tarjeta-cita">"Apoyo muchas reformas de Petro, pero estoy en contra de su propuesta de constituyente."</div>
+        </div>
+      </div>
+      <div class="tarjeta-footer">
+        <span class="tarjeta-fecha">Jun 2024</span>
+        <a href="https://www.dejusticia.org/column/a-favor-del-cambio-y-en-contra-de-la-constituyente/" target="_blank" rel="noopener" class="tarjeta-fuente">Dejusticia →</a>
+      </div>
+    </article>
+
+    <!-- HUMBERTO DE LA CALLE -->
+    <article class="tarjeta" data-postura="contra">
+      <div class="tarjeta-header">
+        <span class="tarjeta-postura postura-contra">En contra</span>
+        <h3 class="tarjeta-actor">Humberto de la Calle</h3>
+        <p class="tarjeta-rol">Exjefe del equipo negociador de paz · Constitucionalista</p>
+      </div>
+      <div class="tarjeta-body">
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Postura</div>
+          <div class="tarjeta-section-text">Crítico de la viabilidad jurídica y política de la propuesta. Cuestiona los tiempos electorales y la falta de claridad sobre qué se quiere cambiar y cómo. Defiende la Constitución de 1991 como acuerdo democrático que ha resistido más de tres décadas.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Argumento</div>
+          <div class="tarjeta-section-text">No hay un proyecto definido sobre qué cambiar y cómo. La idea de "poder constituyente movilizado" es un mecanismo extrajurídico que pone en riesgo el Estado social de derecho.</div>
+        </div>
+      </div>
+      <div class="tarjeta-footer">
+        <span class="tarjeta-fecha">Dic 2025</span>
+        <a href="https://www.infobae.com/colombia/2025/12/28/en-respuesta-a-humberto-de-la-calle-gustavo-petro-entrego-detalles-de-la-asamblea-nacional-constituyente-dura-tres-meses/" target="_blank" rel="noopener" class="tarjeta-fuente">Infobae →</a>
+      </div>
+    </article>
+
+    <!-- CAMILO GONZÁLEZ POSSO / INDEPAZ -->
+    <article class="tarjeta" data-postura="critico">
+      <div class="tarjeta-header">
+        <span class="tarjeta-postura postura-critico">Crítico — Pacto reconstituyente</span>
+        <h3 class="tarjeta-actor">Camilo González Posso</h3>
+        <p class="tarjeta-rol">Director de Indepaz · Sectores progresistas</p>
+      </div>
+      <div class="tarjeta-body">
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Postura</div>
+          <div class="tarjeta-section-text">Crítica desde la izquierda institucional. Considera que sectores democratizantes que defienden el Estado Social de Derecho temen que una constituyente, aunque sea parcial, una vez en funcionamiento ponga en peligro logros democráticos del 91.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Propuesta alternativa</div>
+          <div class="tarjeta-section-text">Un "pacto reconstituyente": activar y materializar los principios socialdemócratas de la Constitución del 91 que han sido neutralizados por tres décadas de hegemonía clientelista, neoconservadora y neoliberal, sin necesidad de una nueva constituyente.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Advertencia</div>
+          <div class="tarjeta-section-text">El antecedente del referendo de paz de 2016, donde ganó el "No" por margen estrecho, muestra los riesgos de abrir procesos constituyentes en escenarios polarizados.</div>
+        </div>
+      </div>
+      <div class="tarjeta-footer">
+        <span class="tarjeta-fecha">Oct 2025</span>
+        <a href="https://indepaz.org.co/pacto-reconstituyente-o-crisis-destituyente-camilo-gonzalez-posso/" target="_blank" rel="noopener" class="tarjeta-fuente">Indepaz →</a>
+      </div>
+    </article>
+
+    <!-- ANTONIO NAVARRO WOLFF -->
+    <article class="tarjeta" data-postura="critico">
+      <div class="tarjeta-header">
+        <span class="tarjeta-postura postura-critico">Crítico — Constituyente del 91</span>
+        <h3 class="tarjeta-actor">Antonio Navarro Wolff</h3>
+        <p class="tarjeta-rol">Expresidente de la Asamblea Constituyente de 1991</p>
+      </div>
+      <div class="tarjeta-body">
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Postura</div>
+          <div class="tarjeta-section-text">Quien presidió la asamblea que redactó la Constitución vigente advierte que "la idea de que una asamblea constituyente sirve para todo es errada". Una vez convocada, su agenda escapa al control de los promotores.</div>
+        </div>
+        <div class="tarjeta-section">
+          <div class="tarjeta-section-label">Argumento</div>
+          <div class="tarjeta-section-text">Hoy no existe el clima de acuerdo amplio que hizo posible la Constitución del 91. La polarización actual hace que un proceso constituyente derive en algo distinto e impredecible.</div>
+        </div>
+      </div>
+      <div class="tarjeta-footer">
+        <span class="tarjeta-fecha">2021–2025</span>
+        <a href="https://indepaz.org.co/pacto-reconstituyente-o-crisis-destituyente-camilo-gonzalez-posso/" target="_blank" rel="noopener" class="tarjeta-fuente">Indepaz →</a>
+      </div>
+    </article>
+
+  </div>
+
+  <footer class="footer">
+    <span>constituyente.com.co</span>
+    <span class="footer-lema">El pueblo constituye, la república une</span>
+    <span>Comité Constituyente Republicano · 2026</span>
+  </footer>
+
+  <script>
+    function filtrar(tipo, btn) {
+      // Actualiza botón activo
+      document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('activo'));
+      btn.classList.add('activo');
+
+      // Filtra tarjetas
+      const tarjetas = document.querySelectorAll('.tarjeta');
+      tarjetas.forEach(t => {
+        if (tipo === 'todos' || t.dataset.postura === tipo) {
+          t.style.display = 'flex';
+        } else {
+          t.style.display = 'none';
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
